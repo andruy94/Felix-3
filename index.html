@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Феликс — Помощник по английскому 🐱</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky:#4A8FD4; --sky-l:#EAF3FF;
+    --mint:#38C99A; --mint-l:#E3FAF3;
+    --sun:#FFB020; --sun-l:#FFF7E0;
+    --coral:#FF6060; --coral-l:#FFF0F0;
+    --plum:#8B6FE8; --plum-l:#F2EEFF;
+    --orange:#FF8C42; --orange-l:#FFF3EB;
+    --dark:#253245; --mid:#7A8899; --light:#F3F7FC; --white:#fff;
+    --r:22px; --sh:0 8px 32px rgba(74,143,212,.13); --sh2:0 16px 48px rgba(74,143,212,.22);
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Nunito',sans-serif;min-height:100vh;background:#FFF5F0;
+    background-image:
+      radial-gradient(ellipse 800px 600px at -5% -5%,#FFE8D6,transparent 65%),
+      radial-gradient(ellipse 600px 600px at 105% 105%,#FFD6EB,transparent 65%),
+      radial-gradient(ellipse 500px 400px at 50% 55%,#FFF2D4,transparent 65%);
+    color:var(--dark)}
+  .app{max-width:700px;margin:0 auto;padding:20px 16px 90px}
+
+  .hdr{display:flex;align-items:center;gap:14px;background:var(--white);border-radius:28px;
+    padding:16px 22px;box-shadow:var(--sh);margin-bottom:18px}
+  .uni-icon{width:60px;height:60px;border-radius:50%;flex-shrink:0;
+    background:linear-gradient(135deg,#FF8C42,#FF6B9D);
+    display:flex;align-items:center;justify-content:center;font-size:30px;
+    box-shadow:0 4px 16px rgba(255,140,66,.35);animation:float 3.5s ease-in-out infinite}
+  @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  .hdr-txt h1{font-family:'Fredoka One',cursive;font-size:28px;
+    background:linear-gradient(135deg,#FF8C42,#FF6B9D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    letter-spacing:.5px}
+  .hdr-txt p{font-size:12px;color:var(--mid);font-weight:700;margin-top:2px}
+  .hdr-stars{margin-left:auto;display:flex;gap:3px}
+  .hs{font-size:22px;opacity:.15;transition:all .35s}
+  .hs.on{opacity:1;animation:sPop .45s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes sPop{0%{transform:scale(0) rotate(-20deg)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+  .prog{display:none;align-items:center;gap:12px;background:var(--white);
+    border-radius:16px;padding:12px 20px;box-shadow:var(--sh);margin-bottom:18px}
+  .prog.show{display:flex}
+  .pb-bg{flex:1;height:10px;background:#E1EAF5;border-radius:30px;overflow:hidden}
+  .pb{height:100%;border-radius:30px;background:linear-gradient(90deg,#FF8C42,#FF6B9D);
+    transition:width .6s ease;width:0%}
+  .pl{font-size:12px;font-weight:800;color:var(--orange);min-width:34px;text-align:right}
+
+  #homeScreen{animation:fadeUp .4s ease}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+  .welcome{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);
+    padding:26px 22px;text-align:center;margin-bottom:16px}
+  .welcome-uni{font-size:56px;margin-bottom:10px;animation:float 3s ease-in-out infinite}
+  .welcome-title{font-family:'Fredoka One',cursive;font-size:26px;
+    background:linear-gradient(135deg,#FF8C42,#FF6B9D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    margin-bottom:6px}
+  .welcome-sub{font-size:14px;color:var(--mid);font-weight:600;line-height:1.65}
+
+  .upload-card{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);
+    padding:22px;margin-bottom:14px}
+  .uc-label{font-size:12px;font-weight:900;color:var(--mid);text-transform:uppercase;
+    letter-spacing:.9px;margin-bottom:14px}
+  .upload-zone{border:2.5px dashed #B8D0F0;border-radius:18px;padding:28px 20px;
+    text-align:center;cursor:pointer;transition:all .22s;background:var(--sky-l);
+    position:relative;margin-bottom:14px}
+  .upload-zone:hover,.upload-zone.dragover{border-color:var(--sky);background:#DFF0FF;transform:scale(1.01)}
+  .upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+  .uz-icon{font-size:42px;margin-bottom:8px}
+  .uz-title{font-family:'Fredoka One',cursive;font-size:18px;color:var(--sky);margin-bottom:4px}
+  .uz-sub{font-size:12px;color:var(--mid);font-weight:600}
+  .preview-box{display:none;border-radius:14px;overflow:hidden;margin-bottom:14px;box-shadow:var(--sh);position:relative}
+  .preview-box img{width:100%;max-height:220px;object-fit:contain;background:#f8fbff;display:block}
+  .preview-box .rm-img{position:absolute;top:8px;right:8px;background:var(--coral);color:white;
+    border:none;border-radius:50%;width:30px;height:30px;font-size:14px;cursor:pointer;font-weight:900;
+    display:flex;align-items:center;justify-content:center}
+  .divider{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .divider::before,.divider::after{content:'';flex:1;height:2px;background:#E1EAF5;border-radius:2px}
+  .divider span{font-size:12px;font-weight:800;color:var(--mid);white-space:nowrap}
+  .task-textarea{width:100%;min-height:90px;padding:14px 16px;border-radius:14px;
+    border:2px solid #E1EAF5;font-family:'Nunito',sans-serif;font-size:15px;
+    resize:vertical;outline:none;transition:border-color .2s;color:var(--dark);
+    background:var(--light);font-weight:600}
+  .task-textarea:focus{border-color:var(--sky);background:var(--white)}
+  .quick-examples{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;margin-bottom:4px;align-items:center}
+  .qe-lbl{font-size:11px;color:var(--mid);font-weight:700}
+  .qe-btn{padding:6px 13px;border-radius:30px;border:2px solid #ffd4b8;
+    background:transparent;color:var(--orange);font-family:'Nunito',sans-serif;
+    font-size:12px;font-weight:800;cursor:pointer;transition:all .2s}
+  .qe-btn:hover{background:var(--orange);color:white;border-color:var(--orange)}
+  .go-btn{width:100%;margin-top:16px;padding:16px;border:none;border-radius:18px;
+    background:linear-gradient(135deg,#FF8C42,#FF6B9D);
+    color:white;font-family:'Fredoka One',cursive;font-size:22px;cursor:pointer;
+    box-shadow:0 6px 22px rgba(255,140,66,.4);transition:all .22s;letter-spacing:.5px}
+  .go-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(255,140,66,.5)}
+  .go-btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+
+  #lessonScreen{display:none;animation:fadeUp .4s ease}
+  .chat-area{display:flex;flex-direction:column;gap:14px}
+
+  .task-banner{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);
+    padding:14px 18px;border-left:4px solid var(--orange)}
+  .tb-label{font-size:11px;font-weight:900;color:var(--orange);text-transform:uppercase;letter-spacing:.9px;margin-bottom:4px}
+  .tb-text{font-size:14px;font-weight:700;color:var(--dark);line-height:1.5}
+  .tb-img{width:100%;max-height:160px;object-fit:contain;border-radius:10px;margin-top:8px}
+
+  .brow{display:flex;align-items:flex-end;gap:10px}
+  .brow.user{flex-direction:row-reverse}
+  .bav{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;font-size:20px;flex-shrink:0}
+  .ai-av{background:linear-gradient(135deg,#FF8C42,#FF6B9D);box-shadow:0 3px 10px rgba(255,140,66,.3)}
+  .us-av{background:linear-gradient(135deg,var(--mint),#22bb8a)}
+  .bubble{max-width:76%;padding:13px 18px;border-radius:20px;font-size:15px;font-weight:600;
+    line-height:1.6;animation:bPop .3s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes bPop{from{transform:scale(.82);opacity:0}to{transform:scale(1);opacity:1}}
+  .ai-b{background:var(--white);box-shadow:var(--sh);border-bottom-left-radius:5px}
+  .us-b{background:linear-gradient(135deg,#FF8C42,#FF6B9D);color:white;border-bottom-right-radius:5px}
+
+  .typing{display:flex;align-items:center;gap:5px;padding:13px 18px;background:var(--white);
+    border-radius:20px;box-shadow:var(--sh);width:fit-content;border-bottom-left-radius:5px}
+  .typing span{width:8px;height:8px;background:var(--orange);border-radius:50%;animation:td 1.1s ease infinite}
+  .typing span:nth-child(2){animation-delay:.18s}
+  .typing span:nth-child(3){animation-delay:.36s}
+  @keyframes td{0%,60%,100%{transform:translateY(0);opacity:.35}30%{transform:translateY(-7px);opacity:1}}
+
+  .widget{background:var(--white);border-radius:var(--r);box-shadow:var(--sh);
+    padding:22px;animation:wIn .35s cubic-bezier(.34,1.56,.64,1)}
+  @keyframes wIn{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .w-title{font-size:11px;font-weight:900;color:var(--mid);text-transform:uppercase;
+    letter-spacing:.9px;margin-bottom:14px}
+
+  .choices{display:flex;flex-direction:column;gap:9px}
+  .ch-btn{padding:13px 18px;border-radius:14px;border:2.5px solid #E1EAF5;
+    background:var(--light);font-family:'Nunito',sans-serif;font-size:16px;font-weight:700;
+    cursor:pointer;text-align:left;transition:all .2s;color:var(--dark)}
+  .ch-btn:hover:not(:disabled){border-color:var(--orange);background:var(--orange-l);color:var(--orange);transform:translateX(4px)}
+  .ch-btn.ok{border-color:var(--mint);background:var(--mint-l);color:#138f6a}
+  .ch-btn.no{border-color:var(--coral);background:var(--coral-l);animation:shk .4s}
+  @keyframes shk{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+
+  .slot-box{min-height:50px;padding:10px 14px;border-radius:14px;border:2.5px dashed #C4D8EE;
+    background:var(--light);display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .slot-box.err{animation:shk .4s;border-color:var(--coral)}
+  .wbank{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .wchip{padding:8px 16px;border-radius:30px;font-family:'Nunito',sans-serif;
+    font-size:15px;font-weight:800;cursor:pointer;user-select:none;transition:all .2s;
+    background:linear-gradient(135deg,var(--orange-l),#ffdfc8);color:var(--orange);border:2px solid #ffcba8}
+  .wchip:hover{transform:scale(1.08);box-shadow:0 4px 14px rgba(255,140,66,.25)}
+  .wchip.in-slot{background:linear-gradient(135deg,var(--plum-l),#e0d8ff);color:var(--plum);border-color:#c5b5f5}
+  .check-btn{padding:11px 26px;border:none;border-radius:30px;
+    background:linear-gradient(135deg,var(--mint),#22bb8a);color:white;
+    font-family:'Nunito',sans-serif;font-size:15px;font-weight:800;
+    cursor:pointer;box-shadow:0 4px 14px rgba(56,201,154,.3);transition:all .2s}
+  .check-btn:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(56,201,154,.4)}
+
+  .match-cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .match-col{display:flex;flex-direction:column;gap:8px}
+  .mitem{padding:12px 14px;border-radius:14px;border:2.5px solid #E1EAF5;
+    background:var(--light);font-family:'Nunito',sans-serif;font-size:14px;font-weight:700;
+    cursor:pointer;text-align:center;transition:all .2s;color:var(--dark)}
+  .mitem:hover:not(.mdone){border-color:var(--plum);background:var(--plum-l);color:var(--plum)}
+  .mitem.msel{border-color:var(--orange);background:var(--orange-l);color:var(--orange);transform:scale(1.04)}
+  .mitem.mdone{border-color:var(--mint);background:var(--mint-l);color:#138f6a;cursor:default}
+  .mitem.mbad{border-color:var(--coral);background:var(--coral-l);animation:shk .4s}
+
+  .lbank{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px}
+  .lslot{min-height:54px;padding:8px 12px;border-radius:14px;border:2.5px dashed #C4D8EE;
+    background:var(--light);display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+  .lchip{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;
+    justify-content:center;font-family:'Fredoka One',cursive;font-size:21px;cursor:pointer;
+    user-select:none;transition:all .2s;
+    background:linear-gradient(135deg,var(--sun-l),#ffe4a0);color:#8a6200;
+    border:2px solid #ffd070;box-shadow:0 3px 8px rgba(255,176,32,.18)}
+  .lchip:hover{transform:scale(1.12) rotate(-3deg);box-shadow:0 6px 16px rgba(255,176,32,.32)}
+
+  .hint-wrap{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+  .hint-item{padding:11px 15px;border-radius:12px;font-size:13px;font-weight:700;
+    animation:bPop .3s ease;display:flex;align-items:flex-start;gap:8px}
+  .hint-item .hi{flex-shrink:0;font-size:16px}
+  .hint-item.h1{background:#FFF7E0;border-left:4px solid var(--sun);color:#7a5800}
+  .hint-item.h2{background:#FFF0F8;border-left:4px solid #FF6B9D;color:#8a2050}
+  .hint-item.h3{background:#F2EEFF;border-left:4px solid var(--plum);color:#4a2090}
+
+  .notebook-card{background:linear-gradient(135deg,#FFFDE8,#FFFBF0);
+    border:2px solid #FFE082;border-radius:var(--r);padding:20px;margin-bottom:14px;
+    box-shadow:0 4px 16px rgba(255,176,32,.15)}
+  .nb-title{font-family:'Fredoka One',cursive;font-size:17px;color:#8a6200;margin-bottom:10px}
+  .nb-answer{background:white;border:2px dashed #FFD54F;border-radius:12px;
+    padding:14px 18px;font-size:18px;font-weight:800;color:var(--dark);
+    font-family:'Nunito',sans-serif;letter-spacing:.3px;margin-bottom:4px}
+  .nb-sub{font-size:12px;color:var(--mid);font-weight:600}
+
+  .success{text-align:center;padding:40px 22px;
+    background:linear-gradient(135deg,#FFF5EF,#FFEEF8);
+    border-radius:var(--r);box-shadow:var(--sh2);animation:bPop .5s cubic-bezier(.34,1.56,.64,1)}
+  .suc-uni{font-size:70px;animation:bnc 1.2s ease infinite;margin-bottom:12px}
+  @keyframes bnc{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+  .suc-title{font-family:'Fredoka One',cursive;font-size:34px;
+    background:linear-gradient(135deg,#FF8C42,#FF6B9D);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    margin-bottom:6px}
+  .suc-msg{font-size:15px;font-weight:600;color:var(--mid);margin-bottom:22px;line-height:1.6}
+  .suc-stars{display:flex;justify-content:center;gap:8px;margin-bottom:24px}
+  .new-btn{padding:14px 36px;border:none;border-radius:30px;
+    background:linear-gradient(135deg,#FF8C42,#FF6B9D);color:white;
+    font-family:'Fredoka One',cursive;font-size:20px;cursor:pointer;
+    box-shadow:0 6px 22px rgba(255,140,66,.4);transition:all .22s}
+  .new-btn:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(255,140,66,.5)}
+
+  .loader{position:fixed;inset:0;background:rgba(236,244,255,.95);z-index:200;
+    display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+  .loader.show{display:flex}
+  .lo{font-size:62px;animation:float 2s ease-in-out infinite}
+  .lt{font-family:'Fredoka One',cursive;font-size:22px;
+    background:linear-gradient(135deg,#FF8C42,#FF6B9D);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .ls{font-size:13px;color:var(--mid);font-weight:600}
+
+  @media(max-width:480px){
+    .match-cols{grid-template-columns:1fr}
+    .bubble{font-size:14px;max-width:86%}
+    .hdr-txt h1{font-size:22px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="hdr">
+    <div class="uni-icon">🐱</div>
+    <div class="hdr-txt">
+      <h1>Феликс</h1>
+      <p>Помощник по английскому 🇬🇧</p>
+    </div>
+    <div class="hdr-stars">
+      <span class="hs" id="hs1">⭐</span>
+      <span class="hs" id="hs2">⭐</span>
+      <span class="hs" id="hs3">⭐</span>
+    </div>
+  </div>
+
+  <div class="prog" id="prog">
+    <div class="pb-bg"><div class="pb" id="pb"></div></div>
+    <div class="pl" id="pl">0%</div>
+  </div>
+
+  <div id="homeScreen">
+    <div class="welcome">
+      <div class="welcome-uni">🐱</div>
+      <div class="welcome-title">Привет! Я Феликс!</div>
+      <div class="welcome-sub">Покажи мне своё задание по английскому — и я помогу!<br>Можешь <strong>сфотографировать</strong> задание или просто <strong>написать его</strong> 📸✏️</div>
+    </div>
+
+    <div class="upload-card">
+      <div class="uc-label">📸 Загрузи фото задания</div>
+      <div class="upload-zone" id="uploadZone">
+        <input type="file" accept="image/*" id="fileInput" onchange="handleFile(event)">
+        <div class="uz-icon">📷</div>
+        <div class="uz-title">Нажми сюда или перетащи фото</div>
+        <div class="uz-sub">Фото из учебника, тетради или телефона</div>
+      </div>
+      <div class="preview-box" id="previewBox">
+        <img id="previewImg" src="" alt="задание">
+        <button class="rm-img" onclick="removeImage()">✕</button>
+      </div>
+
+      <div class="divider"><span>или напиши задание текстом</span></div>
+
+      <textarea class="task-textarea" id="taskText"
+        placeholder="Например: составь предложение из слов he / likes / pizza&#10;или: переведи слова: кошка, собака, рыба, птица&#10;или: вставь is/are: She ___ a student"></textarea>
+
+      <div class="quick-examples">
+        <span class="qe-lbl">Примеры:</span>
+        <button class="qe-btn" onclick="setEx('Составь предложение: I / like / cats')">✏️ Предложение</button>
+        <button class="qe-btn" onclick="setEx('Переведи слова: кошка, собака, рыба, птица')">🐶 Перевод</button>
+        <button class="qe-btn" onclick="setEx('Вставь правильную форму: She ___ (have) a dog')">📝 Грамматика</button>
+        <button class="qe-btn" onclick="setEx('Переведи слова: красный, синий, зелёный, жёлтый')">🎨 Цвета</button>
+      </div>
+
+      <button class="go-btn" onclick="startLesson()" id="goBtn">🐱 Начать урок!</button>
+    </div>
+  </div>
+
+  <div id="lessonScreen">
+    <div class="chat-area" id="chatArea"></div>
+  </div>
+</div>
+
+<div class="loader" id="loader">
+  <div class="lo">🐱</div>
+  <div class="lt">Феликс читает задание... 🐱</div>
+  <div class="ls">Готовлю интерактивный урок специально для тебя!</div>
+</div>
+
+<script>
+let imgBase64 = null;
+let scenario = null;
+let stepIdx = 0;
+let starsCount = 0;
+let totalSteps = 0;
+let matchPairs = [], matchDone = 0;
+let matchSel = {l:null,lEl:null,r:null,rEl:null};
+let errorCounts = {};
+let currentMatchStep = null;
+
+function handleFile(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    imgBase64 = ev.target.result.split(',')[1];
+    document.getElementById('previewImg').src = ev.target.result;
+    document.getElementById('previewBox').style.display = 'block';
+    document.getElementById('uploadZone').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+function removeImage() {
+  imgBase64 = null;
+  document.getElementById('previewBox').style.display = 'none';
+  document.getElementById('uploadZone').style.display = 'block';
+  document.getElementById('fileInput').value = '';
+}
+const uz = document.getElementById('uploadZone');
+uz.addEventListener('dragover', e => { e.preventDefault(); uz.classList.add('dragover'); });
+uz.addEventListener('dragleave', () => uz.classList.remove('dragover'));
+uz.addEventListener('drop', e => {
+  e.preventDefault(); uz.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    const dt = new DataTransfer(); dt.items.add(file);
+    document.getElementById('fileInput').files = dt.files;
+    handleFile({ target: { files: [file] } });
+  }
+});
+function setEx(text) { document.getElementById('taskText').value = text; }
+
+async function startLesson() {
+  const text = document.getElementById('taskText').value.trim();
+  if (!text && !imgBase64) { alert('Напиши задание или загрузи фото!'); return; }
+  document.getElementById('goBtn').disabled = true;
+  document.getElementById('loader').classList.add('show');
+  try {
+    scenario = await callClaude(text, imgBase64);
+    totalSteps = scenario.steps.length;
+    stepIdx = 0; starsCount = 0; errorCounts = {};
+    updateStars(0); updateProg(0);
+    document.getElementById('homeScreen').style.display = 'none';
+    document.getElementById('lessonScreen').style.display = 'block';
+    document.getElementById('prog').classList.add('show');
+    document.getElementById('chatArea').innerHTML = '';
+    document.getElementById('loader').classList.remove('show');
+    document.getElementById('goBtn').disabled = false;
+    showTaskRecap(text, imgBase64);
+    setTimeout(showGreeting, 500);
+    setTimeout(() => renderStep(0), 1700);
+  } catch(err) {
+    console.error(err);
+    document.getElementById('loader').classList.remove('show');
+    document.getElementById('goBtn').disabled = false;
+    alert('Что-то пошло не так. Попробуй ещё раз!');
+  }
+}
+
+async function callClaude(text, image) {
+  const sys = `Ты Феликс — педагогический ИИ-помощник по английскому языку для детей 7-9 лет. Говори ТОЛЬКО на русском языке.
+
+ПЕДАГОГИЧЕСКИЕ ПРИНЦИПЫ (обязательно!):
+1. НИКОГДА не давай готовый ответ. Веди ребёнка к нему маленькими шагами.
+2. ПРОГРЕССИВНЫЕ ПОДСКАЗКИ: для каждого шага дай 3 подсказки разной силы:
+   - hints[0]: мягкое направление — НЕ раскрывает ответ, только направляет думать
+   - hints[1]: более конкретная — указывает на правило или часть ответа
+   - hints[2]: почти ответ — показывает структуру, но не само слово/форму
+3. ГРАММАТИЧЕСКИЕ ЗАДАНИЯ: обязательно сначала помоги вспомнить правило (через choice), потом применить его.
+4. ОСОЗНАННОСТЬ: каждый шаг должен помочь ребёнку понять ПОЧЕМУ ответ такой.
+
+ТИПЫ ШАГОВ (только эти 4):
+1. choice  — data: {"options":["А","Б","В"], "correct":"А"}
+2. match   — data: {"pairs":[{"left":"кошка","right":"cat"},...]}
+3. drag_words — data: {"words":["I","like","cats"], "correct":["I","like","cats"]}
+4. build_word — data: {"letters":["c","a","t"], "correct":"cat"}
+
+СЦЕНАРИИ ПО ТИПУ ЗАДАНИЯ:
+ДЛЯ ПРЕДЛОЖЕНИЯ (4-5 шагов):
+  1. choice — что значит ключевое слово? (понимание)
+  2. choice — с какого слова начинается? (структура предложения)
+  3. drag_words — собери предложение
+  4. choice — финальный
+
+ДЛЯ ПЕРЕВОДА СЛОВ (3-4 шага):
+  1. choice — как переводится первое слово? (3 варианта)
+  2. match — соедини все слова с переводами
+  3. choice — финальный
+
+ДЛЯ ГРАММАТИКИ (5-6 шагов):
+  1. choice — вспомни правило
+  2. choice — к какому лицу/числу относится подлежащее?
+  3. choice — какая форма подходит для этого случая?
+  4. drag_words или choice — собери/выбери полный правильный вариант
+  5. choice — финальный
+
+ФИНАЛЬНЫЙ ШАГ (ОБЯЗАТЕЛЕН, всегда последний):
+Тип: "notebook"
+data: {"answer": "точный ответ который нужно записать", "label": "Запиши в тетрадь:"}
+После него — обязательный choice: {"options":["✅ Записал(а)!"], "correct":"✅ Записал(а)!"}
+
+ТРЕБОВАНИЯ К ПОДСКАЗКАМ:
+Поле hints: МАССИВ из 3 строк [мягкая, средняя, сильная].
+Подсказки должны быть: без готового ответа, добрые и ободряющие, постепенно более конкретные.
+
+ВЕРНИ ТОЛЬКО валидный JSON без markdown:
+{
+  "greeting": "приветствие — что будем делать, 1-2 предложения",
+  "steps": [
+    {
+      "type": "choice|match|drag_words|build_word|notebook",
+      "instruction": "простая инструкция с эмодзи",
+      "hints": ["мягкая подсказка", "средняя подсказка", "сильная подсказка"],
+      "data": {}
+    }
+  ],
+  "celebration": "тёплое поздравление"
+}`;
+
+  const content = [];
+  if (image) content.push({ type:'image', source:{ type:'base64', media_type:'image/jpeg', data:image } });
+  content.push({ type:'text', text: image
+    ? `Вот фото задания.${text ? ' Подсказка: '+text : ''} Определи тип задания и создай сценарий.`
+    : `Задание: ${text}` });
+
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:1800,
+      system:sys,
+      messages:[{role:'user',content}]
+    })
+  });
+  const data = await resp.json();
+  const raw = data.content.map(i=>i.text||'').join('');
+  return JSON.parse(raw.replace(/```json|```/g,'').trim());
+}
+
+function showTaskRecap(text, img) {
+  const b = mk('div','task-banner');
+  const lbl = mk('div','tb-label'); lbl.textContent = '📋 Твоё задание'; b.appendChild(lbl);
+  if (text) { const t=mk('div','tb-text'); t.textContent=text; b.appendChild(t); }
+  if (img) { const i=mk('img','tb-img'); i.src='data:image/jpeg;base64,'+img; b.appendChild(i); }
+  chatEl().appendChild(b);
+}
+
+function showGreeting() {
+  const tw = wAI(mkTyping()); chatEl().appendChild(tw); sb();
+  setTimeout(() => {
+    tw.remove();
+    chatEl().appendChild(wAI(mkBub('ai', scenario.greeting||'Привет! Давай разберём задание вместе! 😊')));
+    sb();
+  }, 600);
+}
+
+function renderStep(idx) {
+  if (idx >= scenario.steps.length) { showSuccess(); return; }
+  stepIdx = idx;
+  errorCounts[idx] = 0;
+  const tw = wAI(mkTyping()); chatEl().appendChild(tw); sb();
+  setTimeout(() => {
+    tw.remove();
+    const step = scenario.steps[idx];
+    chatEl().appendChild(wAI(mkBub('ai', step.instruction)));
+    setTimeout(() => {
+      chatEl().appendChild(buildWidget(step, idx));
+      updateProg(Math.round((idx / totalSteps) * 100));
+      sb();
+    }, 200);
+  }, 700);
+}
+
+function buildWidget(step, idx) {
+  const w = mk('div','widget');
+  if (step.type==='choice')     w.appendChild(buildChoice(step,idx));
+  else if (step.type==='match') w.appendChild(buildMatch(step,idx));
+  else if (step.type==='drag_words') w.appendChild(buildDrag(step,idx));
+  else if (step.type==='build_word') w.appendChild(buildWord(step,idx));
+  else if (step.type==='notebook')   w.appendChild(buildNotebook(step,idx));
+  else w.appendChild(buildChoice(step,idx));
+  return w;
+}
+
+function getHints(step) {
+  if (Array.isArray(step.hints) && step.hints.length > 0) return step.hints;
+  if (step.hint) return [step.hint, step.hint, step.hint];
+  return ['Попробуй ещё раз! 💪', 'Подумай внимательнее...', 'Ты почти у цели!'];
+}
+
+function showProgressiveHint(container, step, idx) {
+  errorCounts[idx] = (errorCounts[idx] || 0) + 1;
+  const hints = getHints(step);
+  const wrap = container.querySelector('.hint-wrap') || (() => {
+    const hw = mk('div','hint-wrap'); container.appendChild(hw); return hw;
+  })();
+  const level = Math.min(errorCounts[idx], 3);
+  const hintText = hints[level - 1] || hints[hints.length - 1];
+  const existing = wrap.querySelector(`.h${level}`);
+  if (existing) existing.remove();
+  const icons = ['💡','🔍','🧩'];
+  const item = mk('div',`hint-item h${level}`);
+  item.innerHTML = `<span class="hi">${icons[level-1]}</span><span>${hintText}</span>`;
+  wrap.appendChild(item);
+  if (level === 2) addCatReaction('Хм, давай подумаем вместе... 🤔');
+  if (level === 3) addCatReaction('Смотри на подсказку внимательно! 👀');
+}
+
+function addCatReaction(text) {
+  const tw = wAI(mkTyping()); chatEl().appendChild(tw); sb();
+  setTimeout(() => { tw.remove(); chatEl().appendChild(wAI(mkBub('ai', text))); sb(); }, 400);
+}
+
+function buildChoice(step, idx) {
+  const d = mk('div');
+  const t = mk('div','w-title'); t.textContent='👆 Выбери правильный ответ'; d.appendChild(t);
+  const cs = mk('div','choices');
+  step.data.options.forEach(opt => {
+    const btn = mk('button','ch-btn'); btn.textContent = opt;
+    btn.onclick = () => {
+      if (opt === step.data.correct) {
+        btn.classList.add('ok');
+        cs.querySelectorAll('.ch-btn').forEach(b=>b.disabled=true);
+        chatEl().appendChild(wUser(mkBub('us',opt)));
+        addStar();
+        if (opt==='✅ Записал(а)!') setTimeout(showSuccess,500);
+        else { praise(); setTimeout(()=>renderStep(idx+1),1200); }
+      } else {
+        btn.classList.add('no');
+        setTimeout(()=>btn.classList.remove('no'),430);
+        showProgressiveHint(d, step, idx);
+      }
+    };
+    cs.appendChild(btn);
+  });
+  d.appendChild(cs); return d;
+}
+
+function buildMatch(step, idx) {
+  matchPairs = step.data.pairs||[]; matchDone=0;
+  matchSel = {l:null,lEl:null,r:null,rEl:null};
+  currentMatchStep = step;
+  const d = mk('div');
+  const t = mk('div','w-title'); t.textContent='🔗 Соедини пары'; d.appendChild(t);
+  const cols = mk('div','match-cols');
+  const lc=mk('div','match-col'), rc=mk('div','match-col');
+  const rights = matchPairs.map(p=>p.right).sort(()=>Math.random()-.5);
+  matchPairs.forEach(p => {
+    const li=mk('div','mitem'); li.textContent=p.left; li.dataset.v=p.left;
+    li.onclick=()=>handleMatch(li,'l',d,idx); lc.appendChild(li);
+  });
+  rights.forEach(r => {
+    const ri=mk('div','mitem'); ri.textContent=r; ri.dataset.v=r;
+    ri.onclick=()=>handleMatch(ri,'r',d,idx); rc.appendChild(ri);
+  });
+  cols.appendChild(lc); cols.appendChild(rc); d.appendChild(cols); return d;
+}
+
+function handleMatch(el, side, container, idx) {
+  if (el.classList.contains('mdone')) return;
+  if (side==='l') {
+    if (matchSel.lEl) matchSel.lEl.classList.remove('msel');
+    matchSel.l=el.dataset.v; matchSel.lEl=el; el.classList.add('msel');
+  } else {
+    if (matchSel.rEl) matchSel.rEl.classList.remove('msel');
+    matchSel.r=el.dataset.v; matchSel.rEl=el; el.classList.add('msel');
+  }
+  if (matchSel.l && matchSel.r) {
+    const ok = matchPairs.find(p=>p.left===matchSel.l&&p.right===matchSel.r);
+    if (ok) {
+      matchSel.lEl.classList.remove('msel'); matchSel.rEl.classList.remove('msel');
+      matchSel.lEl.classList.add('mdone'); matchSel.rEl.classList.add('mdone');
+      matchDone++; addStar();
+      matchSel={l:null,lEl:null,r:null,rEl:null};
+      if (matchDone===matchPairs.length) {
+        chatEl().appendChild(wUser(mkBub('us','Все пары найдены! ✅')));
+        praise(); setTimeout(()=>renderStep(idx+1),1200);
+      }
+    } else {
+      matchSel.lEl.classList.add('mbad'); matchSel.rEl.classList.add('mbad');
+      setTimeout(()=>{
+        matchSel.lEl.classList.remove('mbad','msel'); matchSel.rEl.classList.remove('mbad','msel');
+        matchSel={l:null,lEl:null,r:null,rEl:null};
+      },480);
+      showProgressiveHint(container, currentMatchStep, idx);
+    }
+  }
+}
+
+function buildDrag(step, idx) {
+  const words = [...step.data.words].sort(()=>Math.random()-.5);
+  const correct = Array.isArray(step.data.correct)?step.data.correct:step.data.correct.split(' ');
+  const d = mk('div');
+  const t = mk('div','w-title'); t.textContent='👋 Нажимай на слова — составь предложение'; d.appendChild(t);
+  const sl = mk('div'); sl.style.cssText='font-size:12px;color:var(--mid);font-weight:700;margin-bottom:6px'; sl.textContent='📝 Твоё предложение:'; d.appendChild(sl);
+  const slot = mk('div','slot-box');
+  const bl = mk('div'); bl.style.cssText='font-size:12px;color:var(--mid);font-weight:700;margin-bottom:6px'; bl.textContent='💡 Слова:';
+  const bank = mk('div','wbank');
+  words.forEach(w => {
+    const chip=mk('div','wchip'); chip.textContent=w;
+    chip.onclick=()=>{
+      if(chip.parentElement===bank){chip.classList.add('in-slot');slot.appendChild(chip);}
+      else{chip.classList.remove('in-slot');bank.appendChild(chip);}
+    };
+    bank.appendChild(chip);
+  });
+  const btn=mk('button','check-btn'); btn.textContent='✅ Проверить';
+  btn.onclick=()=>{
+    const placed=Array.from(slot.querySelectorAll('.wchip')).map(c=>c.textContent);
+    if(placed.join(' ')===correct.join(' ')){
+      chatEl().appendChild(wUser(mkBub('us',placed.join(' '))));
+      addStar(); praise(); setTimeout(()=>renderStep(idx+1),1200);
+    } else {
+      slot.classList.add('err'); setTimeout(()=>slot.classList.remove('err'),450);
+      showProgressiveHint(d, step, idx);
+    }
+  };
+  d.appendChild(slot); d.appendChild(bl); d.appendChild(bank); d.appendChild(btn);
+  return d;
+}
+
+function buildWord(step, idx) {
+  const letters=[...step.data.letters].sort(()=>Math.random()-.5);
+  const correct=step.data.correct;
+  const d=mk('div');
+  const t=mk('div','w-title'); t.textContent='🔤 Составь слово из букв'; d.appendChild(t);
+  const sl=mk('div'); sl.style.cssText='font-size:12px;color:var(--mid);font-weight:700;margin-bottom:6px'; sl.textContent='📝 Твоё слово:'; d.appendChild(sl);
+  const slot=mk('div','lslot');
+  const bl=mk('div'); bl.style.cssText='font-size:12px;color:var(--mid);font-weight:700;margin-bottom:6px'; bl.textContent='🔡 Буквы:';
+  const bank=mk('div','lbank');
+  letters.forEach(l=>{
+    const chip=mk('div','lchip'); chip.textContent=l;
+    chip.onclick=()=>{ if(chip.parentElement===bank)slot.appendChild(chip); else bank.appendChild(chip); };
+    bank.appendChild(chip);
+  });
+  const btn=mk('button','check-btn'); btn.textContent='✅ Проверить';
+  btn.onclick=()=>{
+    const word=Array.from(slot.querySelectorAll('.lchip')).map(c=>c.textContent).join('');
+    if(word.toLowerCase()===correct.toLowerCase()){
+      chatEl().appendChild(wUser(mkBub('us',word)));
+      addStar(); praise(); setTimeout(()=>renderStep(idx+1),1200);
+    } else {
+      slot.classList.add('err'); setTimeout(()=>slot.classList.remove('err'),450);
+      showProgressiveHint(d, step, idx);
+    }
+  };
+  d.appendChild(slot); d.appendChild(bl); d.appendChild(bank); d.appendChild(btn);
+  return d;
+}
+
+function buildNotebook(step, idx) {
+  const d = mk('div');
+  const t = mk('div','w-title'); t.textContent='📓 Записываем в тетрадь!'; d.appendChild(t);
+  const nb = mk('div','notebook-card');
+  const nbTitle = mk('div','nb-title');
+  nbTitle.textContent = (step.data.label || 'Запиши в тетрадь:') + ' ✏️';
+  const nbAns = mk('div','nb-answer');
+  nbAns.textContent = step.data.answer || '';
+  const nbSub = mk('div','nb-sub');
+  nbSub.textContent = 'Это правильный ответ — перепиши его в тетрадь аккуратно!';
+  nb.appendChild(nbTitle); nb.appendChild(nbAns); nb.appendChild(nbSub);
+  d.appendChild(nb);
+  const confirmStep = {
+    type: 'choice',
+    instruction: '✏️ Записал(а) в тетрадь?',
+    hints: ['Сначала запиши, потом нажми!','Пиши аккуратно 😊','Записал — нажимай!'],
+    data: { options: ['✅ Записал(а)!'], correct: '✅ Записал(а)!' }
+  };
+  d.appendChild(buildChoice(confirmStep, idx));
+  return d;
+}
+
+function showSuccess() {
+  updateProg(100); updateStars(3);
+  const s=mk('div','success');
+  s.innerHTML=`<div class="suc-uni">🐱</div>
+    <div class="suc-title">Молодец!</div>
+    <div class="suc-msg">${scenario.celebration||'Ты справился с заданием! Так держать!'}</div>
+    <div class="suc-stars"><span style="font-size:36px">⭐</span><span style="font-size:36px">⭐</span><span style="font-size:36px">⭐</span></div>
+    <button class="new-btn" onclick="resetAll()">🐱 Новое задание</button>`;
+  chatEl().appendChild(s); sb();
+}
+
+function resetAll() {
+  imgBase64=null; scenario=null; stepIdx=0; starsCount=0; totalSteps=0; errorCounts={};
+  updateStars(0); updateProg(0);
+  document.getElementById('chatArea').innerHTML='';
+  document.getElementById('taskText').value='';
+  removeImage();
+  document.getElementById('homeScreen').style.display='block';
+  document.getElementById('lessonScreen').style.display='none';
+  document.getElementById('prog').classList.remove('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function mk(tag,cls){const e=document.createElement(tag);if(cls)e.className=cls;return e}
+function chatEl(){return document.getElementById('chatArea')}
+function mkBub(type,text){const b=mk('div',`bubble ${type==='ai'?'ai-b':'us-b'}`);b.textContent=text;return b}
+function mkTyping(){const t=mk('div','typing');t.innerHTML='<span></span><span></span><span></span>';return t}
+function wAI(child){const w=mk('div','brow');const av=mk('div','bav ai-av');av.textContent='🐱';w.appendChild(av);w.appendChild(child);return w}
+function wUser(child){const w=mk('div','brow user');const av=mk('div','bav us-av');av.textContent='🧒';w.appendChild(av);w.appendChild(child);return w}
+function sb(){setTimeout(()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'}),80)}
+function praise(){
+  const msgs=['Отлично! 🎉','Молодец! 💪','Правильно! ⭐','Супер! 🚀','Умница! ✨','Так держать! 🌟','Классно! 😻'];
+  const tw=wAI(mkTyping()); chatEl().appendChild(tw); sb();
+  setTimeout(()=>{tw.remove();chatEl().appendChild(wAI(mkBub('ai',msgs[Math.floor(Math.random()*msgs.length)])));sb();},450);
+}
+function addStar(){starsCount=Math.min(starsCount+1,3);updateStars(starsCount)}
+function updateStars(n){for(let i=1;i<=3;i++){const s=document.getElementById(`hs${i}`);if(i<=n&&!s.classList.contains('on'))s.classList.add('on')}}
+function updateProg(pct){document.getElementById('pb').style.width=pct+'%';document.getElementById('pl').textContent=pct+'%'}
+</script>
+</body>
+</html>
