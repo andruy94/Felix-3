@@ -226,6 +226,14 @@
 <body>
 <div class="app">
 
+  <div id="settingsBar" style="background:white;border-radius:18px;box-shadow:0 4px 16px rgba(74,143,212,.13);padding:12px 18px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+    <span style="font-size:13px;font-weight:800;color:#7A8899;white-space:nowrap;">🔑 Ключ доступа:</span>
+    <input id="clientKeyInput" type="password" placeholder="Вставь свой clientKey..."
+      style="flex:1;min-width:180px;padding:8px 14px;border-radius:30px;border:2px solid #E1EAF5;font-family:'Nunito',sans-serif;font-size:13px;font-weight:700;outline:none;color:#253245;background:#F3F7FC;"
+      oninput="saveKey(this.value)" onfocus="this.type='text'" onblur="this.type='password'">
+    <span id="keyStatus" style="font-size:12px;font-weight:700;color:#7A8899;"></span>
+  </div>
+
   <div class="hdr">
     <div class="uni-icon">🐱</div>
     <div class="hdr-txt">
@@ -361,7 +369,19 @@ async function startLesson() {
   }
 }
 
+function saveKey(val) {
+  localStorage.setItem('felixClientKey', val.trim());
+  document.getElementById('keyStatus').textContent = val.trim() ? '✅' : '';
+}
+
+function getKey() {
+  return localStorage.getItem('felixClientKey') || '';
+}
+
 async function callClaude(text, image) {
+  const clientKey = getKey();
+  if (!clientKey) throw new Error('Нет ключа доступа');
+
   const sys = `Ты Феликс — педагогический ИИ-помощник по английскому языку для детей 7-9 лет. Говори ТОЛЬКО на русском языке.
 
 ПЕДАГОГИЧЕСКИЕ ПРИНЦИПЫ (обязательно!):
@@ -421,24 +441,25 @@ data: {"answer": "точный ответ который нужно записа
   "celebration": "тёплое поздравление"
 }`;
 
-  const content = [];
-  if (image) content.push({ type:'image', source:{ type:'base64', media_type:'image/jpeg', data:image } });
-  content.push({ type:'text', text: image
+  const prompt = sys + '\n\n' + (image
     ? `Вот фото задания.${text ? ' Подсказка: '+text : ''} Определи тип задания и создай сценарий.`
-    : `Задание: ${text}` });
+    : `Задание: ${text}`);
 
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:1800,
-      system:sys,
-      messages:[{role:'user',content}]
-    })
+  const fd = new FormData();
+  fd.append('prompt', prompt);
+  if (image) {
+    const blob = await fetch('data:image/jpeg;base64,' + image).then(r => r.blob());
+    fd.append('image', blob, 'task.jpg');
+  }
+
+  const resp = await fetch('https://api.aiaistudio.org/solve', {
+    method: 'POST',
+    headers: { 'X-Client-Key': clientKey },
+    body: fd
   });
   const data = await resp.json();
-  const raw = data.content.map(i=>i.text||'').join('');
+  if (data.error) throw new Error(data.error);
+  const raw = data.answer || '';
   return JSON.parse(raw.replace(/```json|```/g,'').trim());
 }
 
@@ -713,6 +734,17 @@ function praise(){
 function addStar(){starsCount=Math.min(starsCount+1,3);updateStars(starsCount)}
 function updateStars(n){for(let i=1;i<=3;i++){const s=document.getElementById(`hs${i}`);if(i<=n&&!s.classList.contains('on'))s.classList.add('on')}}
 function updateProg(pct){document.getElementById('pb').style.width=pct+'%';document.getElementById('pl').textContent=pct+'%'}
+
+// Загружаем ключ из localStorage при старте
+(function() {
+  const saved = localStorage.getItem('felixClientKey');
+  if (saved) {
+    const inp = document.getElementById('clientKeyInput');
+    if (inp) inp.value = saved;
+    const st = document.getElementById('keyStatus');
+    if (st) st.textContent = '✅';
+  }
+})();
 </script>
 </body>
 </html>
